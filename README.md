@@ -16,32 +16,9 @@ Pipeline automatizado de engenharia de dados para coleta, transformação e visu
 ---
 
 ## 🏗️ Arquitetura do Projeto
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                                                                             │
-│  ┌──────────────────┐                              ┌──────────────────┐     │
-│  │  Fontes de Dados │                              │   Apresentação   │     │
-│  └──────────────────┘                              └──────────────────┘     │
-│            │                                                   ▲            │
-│            ▼                                                   │            │
-│  ┌──────────────────┐      ┌──────────────────┐     ┌──────────────────┐    │
-│  │  API AwesomeAPI  │      │                  │     │                  │    │
-│  │   (Dólar)        │────▶│                  │     │    Streamlit     │    │
-│  └──────────────────┘      │                  │     │   (Dashboard)    │    │
-│                            │  GitHub Actions  │     └──────────────────┘    │
-│  ┌──────────────────┐      │  (Orquestrador)  │               ▲             │
-│  │  API BCB/SGS     │────▶│                  │               │             │
-│  │ (Selic/IPCA)     │      │                  │               │             │
-│  └──────────────────┘      └──────────────────┘               │             │
-│                                       │                       │             │
-│                                       ▼                       │             │
-│                           ┌──────────────────┐      ┌──────────────────┐    │
-│                           │                  │      │                  │    │
-│                           │   Python ETL     │────▶│    Supabase      │    │
-│                           │ (Pandas/Requests)│      │  (PostgreSQL)    │    │
-│                           │                  │      │                  │    │
-│                           └──────────────────┘      └──────────────────┘    │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+
+O projeto segue uma arquitetura moderna de **ELT (Extract, Load, Transform)** com as seguintes etapas:
+
 
 **Fluxo de Dados:**
 1. **Extração**: Coleta automatizada de dados das APIs da AwesomeAPI (Dólar) e Banco Central (Selic/IPCA)
