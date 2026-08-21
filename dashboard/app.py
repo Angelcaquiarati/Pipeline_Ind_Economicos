@@ -461,7 +461,6 @@ with tab1:
 # ─── TAB 2: ESTATÍSTICAS ───
 with tab2:
     if not df_cambio.empty:
-        # Criar 2 colunas para Estatísticas e Tendência
         col_est1, col_est2 = st.columns(2)
         
         with col_est1:
@@ -484,7 +483,6 @@ with tab2:
             if len(df_cambio) >= 7:
                 ultimos_7 = df_cambio['dolar_compra'].tail(7)
                 tendencia_dias = []
-                
                 for i in range(1, len(ultimos_7)):
                     if ultimos_7.iloc[i] > ultimos_7.iloc[i-1]:
                         tendencia_dias.append("📈")
@@ -493,44 +491,16 @@ with tab2:
                     else:
                         tendencia_dias.append("➡️")
                 
-                # Criar uma string com os emojis
-                tendencia_str = " ".join(tendencia_dias)
+                st.markdown("**Últimos 7 dias:**")
+                st.write(" | ".join(tendencia_dias))
                 
-                # Calcular dias em alta
                 dias_alta = tendencia_dias.count("📈")
                 perc_alta = (dias_alta / len(tendencia_dias)) * 100
-                
-                # 🔥 FORMATAR MELHOR A TENDÊNCIA
-                st.markdown(f"""
-                <div style="background: linear-gradient(145deg, var(--card-bg), rgba(20,20,48,0.8)); 
-                            border-radius: 16px; padding: 20px; 
-                            border: 1px solid var(--card-border);">
-                    <div style="color: var(--text-secondary); font-size: 14px; margin-bottom: 12px;">
-                        📊 Últimos 7 dias:
-                    </div>
-                    <div style="font-size: 28px; letter-spacing: 8px; text-align: center; padding: 10px 0;">
-                        {tendencia_str}
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--card-border);">
-                        <div>
-                            <span style="color: var(--text-secondary);">📈 Dias em Alta</span>
-                            <span style="color: var(--neon-green); font-weight: 700; font-size: 18px; margin-left: 8px;">
-                                {dias_alta}/{len(tendencia_dias)}
-                            </span>
-                        </div>
-                        <div>
-                            <span style="color: var(--text-secondary);">🎯 Percentual</span>
-                            <span style="color: var(--neon-blue); font-weight: 700; font-size: 18px; margin-left: 8px;">
-                                {perc_alta:.0f}%
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.warning("⚠️ Dados insuficientes para análise de tendência (mínimo 7 dias)")
-    else:
-        st.warning("⚠️ Nenhum dado disponível para estatísticas")
+                st.metric(
+                    label="🎯 Dias em Alta",
+                    value=f"{dias_alta}/{len(tendencia_dias)}",
+                    delta=f"{perc_alta:.0f}%"
+                )
 
 # ─── TAB 3: DADOS HISTÓRICOS ───
 with tab3:
