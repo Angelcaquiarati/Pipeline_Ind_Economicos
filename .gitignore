@@ -41,4 +41,5 @@ data/raw/
 Thumbs.db
 
 # Logs
-*.log
+*.log__pycache__/
+*.pyc
