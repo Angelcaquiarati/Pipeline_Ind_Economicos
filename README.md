@@ -9,7 +9,7 @@ Pipeline automatizado de engenharia de dados para coleta, transformação e visu
 
 ## 🔗 Links Rápidos
 
-- **📊 Dashboard Online**: [pipeline-ind-economicos.streamlit.app](https://pipeline-ind-economicos.streamlit.app)
+- **📊 Dashboard Online**: [pipeline-ind-economicos.streamlit.app](https://pipelineindeconomicos-nwzppy4nswwzcyglm657oo.streamlit.app/)
 - **🐙 Repositório**: [github.com/Angelcaquiarati/Pipeline_Ind_Economicos](https://github.com/Angelcaquiarati/Pipeline_Ind_Economicos)
 - **🗄️ Banco de Dados**: Supabase PostgreSQL
 
