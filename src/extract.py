@@ -8,74 +8,95 @@ from dotenv import load_dotenv
 # Carregar variáveis de ambiente
 load_dotenv()
 
-def extract_dolar():
+def extract_dolar(dias=7):
     """
-    Busca a cotação do Dólar (USD/BRL) da API AwesomeAPI
-    Com fallback para dados mockados
+    Busca a cotação do Dólar (USD/BRL) dos últimos N dias
+    Dados REAIS da API AwesomeAPI
     """
     import time
-    from datetime import datetime
+    from datetime import datetime, timedelta
     
     try:
-        url = "https://economia.awesomeapi.com.br/json/last/USD-BRL"
+        # Calcular data de início (N dias atrás)
+        data_fim = datetime.now()
+        data_inicio = data_fim - timedelta(days=dias)
         
-        # Pequeno delay
-        time.sleep(2)
+        # Formatar datas para a API (YYYYMMDD)
+        inicio_str = data_inicio.strftime('%Y%m%d')
+        fim_str = data_fim.strftime('%Y%m%d')
+        
+        print(f"📊 Buscando {dias} dias de dados históricos do Dólar...")
+        
+        # URL para buscar dados históricos
+        url = f"https://economia.awesomeapi.com.br/json/daily/USD-BRL/{dias}?start_date={inicio_str}&end_date={fim_str}"
         
         response = requests.get(url, timeout=10)
         
         if response.status_code == 429:
-            print("⚠️ API do Dólar bloqueada por excesso de requisições.")
-            print("📊 Usando dados mockados para teste...")
-            
-            # Dados mockados (exemplo)
-            df = pd.DataFrame([{
-                'data': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                'moeda': 'USD',
-                'compra': 5.45,
-                'venda': 5.48,
-                'maximo': 5.52,
-                'minimo': 5.42,
-                'fonte': 'Mock'
-            }])
-            
-            print(f"✅ Dólar (mock): R$ {df['compra'].iloc[0]:.2f}")
-            return df
+            print("⚠️ Rate limit da API. Aguardando 10 segundos...")
+            time.sleep(10)
+            response = requests.get(url, timeout=10)
         
         response.raise_for_status()
         
         data = response.json()
-        dolar = data['USDBRL']
         
-        df = pd.DataFrame([{
-            'data': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'moeda': 'USD',
-            'compra': float(dolar['bid']),
-            'venda': float(dolar['ask']),
-            'maximo': float(dolar['high']),
-            'minimo': float(dolar['low']),
-            'fonte': 'AwesomeAPI'
-        }])
+        if not data:
+            print("⚠️ Nenhum dado retornado pela API")
+            return pd.DataFrame()
         
-        print(f"✅ Dólar extraído: R$ {df['compra'].iloc[0]:.2f}")
+        # Processar os dados - CORRIGIDO!
+        registros = []
+        for item in data:
+            # A API retorna 'create_date' com a data completa
+            if 'create_date' in item:
+                data_str = item['create_date']
+            else:
+                # Fallback: usar timestamp
+                timestamp = int(item.get('timestamp', 0))
+                data_str = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+            
+            registros.append({
+                'data': data_str,
+                'moeda': 'USD',
+                'compra': float(item['bid']),
+                'venda': float(item['ask']),
+                'maximo': float(item['high']),
+                'minimo': float(item['low']),
+                'fonte': 'AwesomeAPI'
+            })
+        
+        df = pd.DataFrame(registros)
+        
+        # Ordenar por data (mais recente primeiro)
+        df = df.sort_values('data', ascending=False)
+        
+        print(f"✅ Dólar: {len(df)} dias REAIS extraídos (último: R$ {df['compra'].iloc[0]:.2f})")
+        print(f"   Período: {df['data'].iloc[-1]} até {df['data'].iloc[0]}")
         return df
         
     except Exception as e:
         print(f"❌ Erro ao extrair Dólar: {e}")
         print("📊 Usando dados mockados para teste...")
         
-        # Dados mockados (fallback)
-        df = pd.DataFrame([{
-            'data': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'moeda': 'USD',
-            'compra': 5.45,
-            'venda': 5.48,
-            'maximo': 5.52,
-            'minimo': 5.42,
-            'fonte': 'Mock'
-        }])
+        # Fallback: dados mockados
+        registros = []
+        hoje = datetime.now()
+        for i in range(dias):
+            data = hoje - timedelta(days=i)
+            valor_base = 5.45 + (i * 0.02)
+            registros.append({
+                'data': data.strftime('%Y-%m-%d %H:%M:%S'),
+                'moeda': 'USD',
+                'compra': round(valor_base, 2),
+                'venda': round(valor_base + 0.03, 2),
+                'maximo': round(valor_base + 0.07, 2),
+                'minimo': round(valor_base - 0.03, 2),
+                'fonte': 'Mock'
+            })
         
-        print(f"✅ Dólar (mock): R$ {df['compra'].iloc[0]:.2f}")
+        df = pd.DataFrame(registros)
+        print(f"✅ Dólar (mock): {len(df)} dias gerados")
         return df
 
 def extract_selic():
