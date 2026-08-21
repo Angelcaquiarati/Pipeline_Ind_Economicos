@@ -11,19 +11,42 @@ load_dotenv()
 def extract_dolar():
     """
     Busca a cotação do Dólar (USD/BRL) da API AwesomeAPI
-    Retorna: DataFrame com data e cotação
+    Com fallback para dados mockados
     """
+    import time
+    from datetime import datetime
+    
     try:
-        # API pública (não precisa de chave para uso básico)
         url = "https://economia.awesomeapi.com.br/json/last/USD-BRL"
         
+        # Pequeno delay
+        time.sleep(2)
+        
         response = requests.get(url, timeout=10)
+        
+        if response.status_code == 429:
+            print("⚠️ API do Dólar bloqueada por excesso de requisições.")
+            print("📊 Usando dados mockados para teste...")
+            
+            # Dados mockados (exemplo)
+            df = pd.DataFrame([{
+                'data': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'moeda': 'USD',
+                'compra': 5.45,
+                'venda': 5.48,
+                'maximo': 5.52,
+                'minimo': 5.42,
+                'fonte': 'Mock'
+            }])
+            
+            print(f"✅ Dólar (mock): R$ {df['compra'].iloc[0]:.2f}")
+            return df
+        
         response.raise_for_status()
         
         data = response.json()
-        
-        # Extrair dados
         dolar = data['USDBRL']
+        
         df = pd.DataFrame([{
             'data': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'moeda': 'USD',
@@ -39,7 +62,21 @@ def extract_dolar():
         
     except Exception as e:
         print(f"❌ Erro ao extrair Dólar: {e}")
-        return pd.DataFrame()
+        print("📊 Usando dados mockados para teste...")
+        
+        # Dados mockados (fallback)
+        df = pd.DataFrame([{
+            'data': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'moeda': 'USD',
+            'compra': 5.45,
+            'venda': 5.48,
+            'maximo': 5.52,
+            'minimo': 5.42,
+            'fonte': 'Mock'
+        }])
+        
+        print(f"✅ Dólar (mock): R$ {df['compra'].iloc[0]:.2f}")
+        return df
 
 def extract_selic():
     """
