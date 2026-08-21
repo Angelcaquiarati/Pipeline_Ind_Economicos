@@ -1,7 +1,7 @@
 # 📊 Pipeline de Indicadores Econômicos
 
 [![Pipeline Status](https://github.com/Angelcaquiarati/Pipeline_Ind_Economicos/actions/workflows/etl_pipeline.yml/badge.svg)](https://github.com/Angelcaquiarati/Pipeline_Ind_Economicos/actions)
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://pipeline-ind-economicos.streamlit.app)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://pipelineindeconomicos-nwzppy4nswwzcyglm657oo.streamlit.app/)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
